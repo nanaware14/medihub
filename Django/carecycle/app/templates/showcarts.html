@@ -70,18 +70,19 @@
             {% endfor %}
 
             <!-- Total Section -->
-            <div class="summary-card mt-4">
-                <h5 class="fw-bold text-center">🛍 Order Summary</h5>
-                <hr>
-                <h6><strong>Total Items: {{ totalitems }}</strong></h6>
-                <h6><strong>Total Amount: ₹{{ totalamount }}/-</strong></h6>
-                <hr>
-                {% if totalitems >= 1 %}
-                <a href="/addadress_all" class="btn btn-danger w-100">Proceed to Payment</a>
-                {% else %}
-                <button class="btn btn-danger w-100" disabled>No Items in Cart</button>
-                {% endif %}
-            </div>
+            <!-- Total Section -->
+<div class="summary-card mt-4">
+    <h5 class="fw-bold text-center">🛍 Order Summary</h5>
+    <hr>
+    <h6><strong>Total Items: {{ totalitems }}</strong></h6>
+    <h6><strong>Total Amount: ₹{{ totalamount }}/-</strong></h6>
+    <hr>
+    {% if totalitems >= 1 %}
+        <a href="{% url 'addaddress' %}" class="btn btn-danger w-100">Proceed to Payment</a>
+    {% else %}
+        <button class="btn btn-danger w-100" disabled>No Items in Cart</button>
+    {% endif %}
+</div>
         </div>
     </div>
 </div>

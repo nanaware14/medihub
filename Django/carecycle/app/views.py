@@ -174,6 +174,26 @@ def showcarts(req):
     else:
         context={'allcarts':allcarts,"totalitems":totalitems,"totalamount":totalamount}
     return render(req, 'showcarts.html',context)
+def showcarts(req):
+    user = req.user 
+
+    if user.is_authenticated:  
+        # allcarts = Cart.objects.filter(userid=CUser) 
+        allcarts = Cart.objects.filter(userid=user)
+        totalitems = len(allcarts)
+        totalamount = sum(x.productid.price * x.qty for x in allcarts)  
+    else:
+        allcarts = []
+        totalitems = 0
+        totalamount = 0
+
+    context = {
+        'allcarts': allcarts,
+        'totalitems': totalitems,
+        'totalamount': totalamount
+    }
+
+    return render(req, 'showcarts.html', context)
 
 
 # def addtocart(req,medicineid):
@@ -196,24 +216,48 @@ def showcarts(req):
 
 def addtocart(req, medicineid):
     if req.user.is_authenticated:
-        userid = req.user
+        try:
+            userid = CUser.objects.get(email=req.user.email)
+        except CUser.DoesNotExist:
+            userid = None  
     else:
         userid = None
 
     allMedicine = get_object_or_404(Medicine, medicineid=medicineid)
-    print(allMedicine)
-    cartitem, created = Cart.objects.get_or_create(userid=userid, productid=allMedicine)
 
-    print(cartitem)
-    print(created)
+   
+    if userid:
+        cartitem, created = Cart.objects.get_or_create(userid=userid, productid=allMedicine)
 
-    if not created:
-        cartitem.qty += 1
-    else:
-        cartitem.qty = 1
-    cartitem.save()
+        if not created:
+            cartitem.qty += 1
+        else:
+            cartitem.qty = 1
+        cartitem.save()
 
     return redirect("/showcarts")
+
+
+def proceedtopay(request):
+    if not request.user.is_authenticated:  
+        return redirect('/signin')
+
+    user = CUser.objects.get(email=request.user.email)
+
+   
+    cart = request.session.get('cart', {})
+    for medicineid, qty in cart.items():
+        product = Medicine.objects.get(medicineid=medicineid)
+        cart_item, created = Cart.objects.get_or_create(userid=user, productid=product)
+        cart_item.qty += qty
+        cart_item.save()
+
+    request.session['cart'] = {} 
+
+    return render(request, 'payment.html')  
+
+
+
 
 
 

@@ -18,5 +18,6 @@ urlpatterns = [
     path("update-qty/<int:qv>/<int:medicineid>/", views.updateqty, name="updateqty"),
     path("add-address/", views.addaddress, name="addaddress"),
     path("show-address/", views.showaddress, name="showaddress"),
+    path("addadress/", views.addaddress, name="addadress"),
 
 ]
